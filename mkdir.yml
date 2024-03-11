@@ -6,6 +6,6 @@
   tasks:
     - name: Create ansible directory
       ansible.builtin.file:
-        path: /tmp/ansible
+        path: /tmp/ansible2
         state: directory
         mode: '0755'
