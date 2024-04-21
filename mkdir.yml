@@ -4,12 +4,12 @@
     #  become: true
 
   tasks:
-    - name: check env
-      shell: set
-      register: cmd_out
+    #    - name: check env
+    #      shell: set
+    #      register: cmd_out
 
     - debug:
-        msg: "{{ cmd_out }}"
+        msg: "{{ ssh_pubkey }}, {{ ssh_privkey }}, {{ pull_secret }}, {{ vcenter_uid }}, {{ vcenter_pass }}, {{ vcenter_cacert }}
 
           #    - name: Create ansible directory
           #      ansible.builtin.file:
