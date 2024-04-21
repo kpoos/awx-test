@@ -1,7 +1,7 @@
 ---
 - name: Create Ansible folder
   hosts: localhost
-  become: true
+    #  become: true
 
   tasks:
     - name: check env
