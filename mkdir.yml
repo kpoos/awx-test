@@ -8,8 +8,9 @@
     #      shell: set
     #      register: cmd_out
 
-    - debug:
-        msg: "{{ ssh_pubkey }}, {{ ssh_privkey }}, {{ pull_secret }}, {{ vcenter_uid }}, {{ vcenter_pass }}, {{ vcenter_cacert }}
+    - name: print out variables
+      debug:
+        msg: "{{ ssh_pubkey }}, {{ ssh_privkey }}, {{ pull_secret }}, {{ vcenter_uid }}, {{ vcenter_pass }}, {{ vcenter_cacert }}"
 
           #    - name: Create ansible directory
           #      ansible.builtin.file:
