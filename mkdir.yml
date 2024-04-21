@@ -1,7 +1,14 @@
 ---
 - name: Create Ansible folder
-  hosts: all
+  hosts: localhost
   become: true
+
+- name: check env
+  shell: set
+  register: cmd_out
+
+- debug:
+    msg: "{{ cmd_out }}"
 
   tasks:
     - name: Create ansible directory
