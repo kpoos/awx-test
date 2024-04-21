@@ -1,0 +1,28 @@
+---
+# - name: Deploy Redis chart using values files on target  
+#   kubernetes.core.helm:    
+#     name: "{{ release_name }}" 
+#     chart_ref: bitnami/redis    
+#     release_namespace: "{{ namespace }}"
+#     create_namespace: true
+#     chart_version: "19.0.0"
+#     dependency_update: false
+#     purge: false
+#     wait: true
+#     values: 
+#       "{{ lookup('template', 'templates/values.yml.j2') | from_yaml }}"
+
+# - name: Store passwords
+#   kubernetes.core.k8s_info:
+#     kind: secret
+#     api_key: "{{ lookup('env', 'K8S_AUTH_API_KEY') }}"
+#     host: "{{ lookup('env', 'K8S_AUTH_HOST') }}"
+#     label_selectors:
+#       - meta.helm.sh/release-name = "{{ release_name }}"
+#       - meta.helm.sh/release-namespace = "{{ namespace }}"
+#     namespace: "{{ namespace }}"
+#     verify_ssl: no
+#   register: redis_password 
+
+# TODO pass to Passwordstate once, when it is available
+#- name: Upload to Passwordstatev

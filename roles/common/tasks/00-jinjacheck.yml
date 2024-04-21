@@ -1,0 +1,36 @@
+---
+- name: check env
+  shell: set
+  register: cmd_out
+
+- debug:
+    msg: "{{ cmd_out }}"
+
+- name: show templating results
+  debug:
+    msg: "{{ lookup('template', 'templates/clusterdeployment.yaml.j2') }}"
+
+# - name: raw command
+#   raw: "set | grep -i proxy"
+#   register: proxy_output
+
+# - name: debug output 
+#   debug:
+#     var: proxy_output
+    
+# - name: Get status of the Redis deployment
+#   raw: "oc login --token=sha256~Fw671G5GrMsVxfPTKJK4ae06-qq_DKV_kcFhSMeQsa8 --server=https://api.ocpa-d.cese.hu:6443 --insecure-skip-tls-verify && oc get secrets redis-test-https-cert -o=yaml -n redis-test" 
+
+# - name: Get information about pods in the provisioning namespace
+#   kubernetes.core.k8s_info:
+#     kind: Pod
+#     namespace: "{{ namespace }}"
+#     verify_ssl: no
+#   register: pod_info
+
+# - name: get debug infos
+#   debug:
+#     var: pod_info
+
+
+

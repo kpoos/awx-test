@@ -1,0 +1,6 @@
+---
+- hosts: ocpb-d
+  connection: local
+  gather_facts: false
+  roles:
+    - common

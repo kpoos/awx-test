@@ -1,0 +1,2 @@
+[okd_clusters]
+ocpb-d ansible_host=localhost

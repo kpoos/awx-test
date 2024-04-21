@@ -1,0 +1,5 @@
+---
+- name: jinja check
+  import_tasks: 00-jinjacheck.yml
+#- name: Start cluster deployment
+#  import_tasks: 01-deployment.yml

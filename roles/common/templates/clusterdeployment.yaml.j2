@@ -1,0 +1,159 @@
+apiVersion: v1
+items:
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterDeployment
+  metadata:
+    name: {{ clname }} 
+  spec:
+    baseDomain: {{ basedomain }} 
+    clusterName: {{ clname }}
+    controlPlaneConfig:
+      servingCertificates: {}
+    installed: false
+    platform:
+      vsphere:
+        certificatesSecretRef:
+          name: {{ clname }}-vsphere-certs
+        cluster: {{ vsphere_cluster }} 
+        credentialsSecretRef:
+          name: {{ clname }}-vsphere-creds
+        datacenter: {{ vsphere_dc }} 
+        defaultDatastore: {{ vsphere_datastore }} 
+        folder: {{ vsphere_folder }} 
+        network: {{ vsphere_network }} 
+        vCenter: {{ vsphere_vcenter }} 
+    provisioning:
+      imageSetRef:
+        name: {{ clname }}-imageset
+      installConfigSecretRef:
+        name: {{ clname }}-install-config
+      sshPrivateKeySecretRef:
+        name: {{ clname }}-ssh-private-key
+    pullSecretRef:
+      name: {{ clname }}-pull-secret
+  status: {}
+- apiVersion: hive.openshift.io/v1
+  kind: MachinePool
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-worker
+  spec:
+    clusterDeploymentRef:
+      name: {{ clname }}
+    name: worker
+    platform:
+      vsphere:
+        coresPerSocket: {{ vm_cores | default(1,true) }}
+        cpus: {{ vm_cpu | default(4,true) }}
+        memoryMB: {{ vm_mem | default(16384,true) }}
+        osDisk:
+          diskSizeGB: {{ vm_disk | default(120,true) }}
+    replicas: {{ worker_replicas | default(3,true) }}
+  status: {}
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-install-config
+  stringData:
+    install-config.yaml: |
+      apiVersion: v1
+      baseDomain: {{ basedomain }} 
+      proxy:
+        httpProxy: {{ httpproxy }} 
+        httpsProxy: {{ httpsproxy }}
+        noProxy: {{ clname }}.{{ basedomain }},{{ noproxy }} 
+      compute:
+      - name: worker
+        platform:
+          vsphere:
+            coresPerSocket: {{ worker_vm_cores | default(1,true) }}
+            cpus: {{ worker_vm_cpu | default(4,true) }}
+            memoryMB: {{ worker_vm_mem | default(16384,true) }}
+            osDisk:
+              diskSizeGB: {{ worker_vm_disk | default(120,true) }}
+        replicas: {{ worker_replicas | default(3,true) }}
+      controlPlane:
+        name: master
+        platform:
+          vsphere:
+            coresPerSocket: {{ master_vm_cores | default(1,true) }}
+            cpus: {{ master_vm_cpu | default(4,true) }}
+            memoryMB: {{ master_vm_mem | default(16384,true) }}
+            osDisk:
+              diskSizeGB: {{ master_vm_disk | default(120,true) }}
+        replicas: {{ master_replicas | default(3,true) }}
+      metadata:
+        creationTimestamp: null
+        name: {{ clname }}
+      networking:
+        clusterNetwork:
+        - cidr: {{ clusternetwork | default("10.128.0.0/14",true) }}
+          hostPrefix: {{ clusternetwork_hostprefix | default(23,true) }}
+        machineNetwork:
+        - cidr: {{ machinenetwork | default("10.0.0.0/16",true) }}
+        serviceNetwork:
+        - {{ servicenetwork | default("172.30.0.0/16",true) }}
+      platform:
+        vsphere:
+          apiVIPs:
+          - {{ apivips }} 
+          cluster: {{ vsphere_cluster }} 
+          datacenter: {{ vsphere_dc }} 
+          defaultDatastore: {{ vsphere_datastore }} 
+          folder: {{ vsphere_folder }} 
+          ingressVIPs:
+          - {{ ingressvips }} 
+          network: {{ vsphere_network }} 
+          password: {{ vcenter_pass }} 
+          username: {{ vcenter_uid }} 
+          vCenter: {{ vsphere_vcenter }}
+      pullSecret: {{ clname }}-pull-secret
+      sshKey: {{ ssh_pubkey }}
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-pull-secret
+  stringData:
+    .dockerconfigjson: |-
+      {{ pull_secret }}
+  type: kubernetes.io/dockerconfigjson
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-ssh-private-key
+  stringData:
+    ssh-privatekey: |
+      {{ ssh_privkey }}
+  type: Opaque
+- apiVersion: v1
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-vsphere-creds
+  stringData:
+    password: {{ vcenter_pass }} 
+    username: {{ vcenter_uid }} 
+  type: Opaque
+- apiVersion: v1
+  data:
+    .cacert: 
+    {{ vcenter_cacert }}
+  kind: Secret
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-vsphere-certs
+  type: Opaque
+- apiVersion: hive.openshift.io/v1
+  kind: ClusterImageSet
+  metadata:
+    creationTimestamp: null
+    name: {{ clname }}-imageset
+  spec:
+    releaseImage: {{ releaseimage }}
+  status: {}
+kind: List
+metadata: {}
